@@ -31,9 +31,23 @@ gamma0 = np.radians(90)                     #Initial pitch angle at launch
 v0 = x0 = h0 = vd0 = vg0 = 0                #Initial state-vector values
 y0 = [v0, gamma0, x0, h0, vg0, vd0]         #Initial state-vector
 t0 = 0                                      #Initial time
-stages = 3                                  #Number of stages
 
 #VEHICLE PARAMETERS#
+
+stage_params = [
+
+#dictionary of staging parameters:
+
+    {"m0":623,"mProp": 66.2,
+    "radius": 0.00015, "t_burnout": 0.53, "thrustASL": 222.4, "thrustVac": 244.4},
+
+    {"m0":342.8,"mProp": 191,
+    "radius": 0.00015, "t_burnout": 47, "thrustASL": 6.7, "thrustVac": 7.7},
+
+    {"m0":55,"mProp": 0.0,
+    "radius": 0.00015, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
+]
+
 #Stage - 1
 
 area_s1 = np.pi * (0.00015 ** 2)     #Rocket tip area
@@ -70,6 +84,11 @@ def mass(t, num_stages):
 
     if t < 0:
         raise ValueError("t must be non-negative")
+
+
+
+
+
 
     if num_stages == 1 or t <= t_bo_s1:
         return m0_s1 - m_dot_s1 * t

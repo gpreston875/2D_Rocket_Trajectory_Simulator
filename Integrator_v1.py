@@ -33,20 +33,21 @@ y0 = [v0, gamma0, x0, h0, vg0, vd0]         #Initial state-vector
 t0 = 0                                      #Initial time
 
 #VEHICLE PARAMETERS#
-
+stage_flag = 0
 stage_params = [
 
 #dictionary of staging parameters:
 
-    {"m0":623,"mProp": 66.2,
+    {"stage": 0, "m0":623,"mProp": 66.2,
     "radius": 0.00015, "t_burnout": 0.53, "thrustASL": 222.4, "thrustVac": 244.4},
 
-    {"m0":342.8,"mProp": 191,
+    {"stage": 1, "m0":342.8,"mProp": 191,
     "radius": 0.00015, "t_burnout": 47, "thrustASL": 6.7, "thrustVac": 7.7},
 
-    {"m0":55,"mProp": 0.0,
+    {"stage": 2, "m0":55,"mProp": 0.0,
     "radius": 0.00015, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
 ]
+
 
 #Stage - 1
 
@@ -70,6 +71,13 @@ ThrustVac_s2 = 7.7                             #Thrust in a vacuum (kN)
 t_bo_s2 = 45                                   #Burnout time
 m_dot_s2 = m_prop_s2/t_bo_s2
 
+def get_stage(t):
+    found_stage = False
+    for p in stage_params:
+        if not found_stage and t < p['t_burnout']:
+            found_stage = True
+            return p['stage']
+
 def mass(t, num_stages):
 
     """
@@ -85,7 +93,7 @@ def mass(t, num_stages):
     if t < 0:
         raise ValueError("t must be non-negative")
 
-
+    # TODO: Cascade get stages function throughout
 
 
 

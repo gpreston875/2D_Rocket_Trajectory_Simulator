@@ -20,10 +20,10 @@ from scipy.integrate import solve_ivp
 
 #Environmental Parameters#
 
-g0 = 0.00981                #Initial gravitational acceleration km/s^2
+g0 = 0.00981                #Initial gravitational acceleration (km/s^2)
 rho0 = 1225000000           #Atmospheric density at sea level (kg/km^3)
 p0 = 1                      #Static pressure at sea level (atm)
-R_E = 6378                  #
+R_E = 6378                  #Radius of Earth in (km)
 
 #MISSION PARAMETERS#
 h_pitch = 0.01                              #Altitude to start gravity turn
@@ -31,7 +31,7 @@ gamma0 = np.radians(90)                     #Initial pitch angle at launch
 v0 = x0 = h0 = vd0 = vg0 = 0                #Initial state-vector values
 y0 = [v0, gamma0, x0, h0, vg0, vd0]         #Initial state-vector
 t0 = 0                                      #Initial time
-tf = 200                                #Final time
+tf = 150                                #Final time
 t_span = (t0,tf)                            #Time span for RK45 function
 
 #VEHICLE PARAMETERS#
@@ -39,16 +39,15 @@ stage_params = [
 
 #dictionary of staging parameters:
 
-    {"stage": 0, "m0":623,"mProp": 66.2,
-    "radius": 0.00015, "t_burnout": 0.53, "thrustASL": 222.4, "thrustVac": 244.4},
+    {"stage": 0, "m0":751,"mProp": 68,
+    "radius": 0.00015, "t_burnout": 0.63, "thrustASL": 222.4, "thrustVac": 244.4},
 
-    {"stage": 1, "m0":342.8,"mProp": 191,
-    "radius": 0.00015, "t_burnout": 47, "thrustASL": 6.7, "thrustVac": 7.7},
+    {"stage": 1, "m0":470,"mProp": 280,
+    "radius": 0.00015, "t_burnout": 40, "thrustASL": 11.7, "thrustVac": 13.8},
 
-    {"stage": 2, "m0":55,"mProp": 0.0,
+    {"stage": 2, "m0":190,"mProp": 0.0,
     "radius": 0.00015, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
 ]
-
 
 def get_grav(h):
 
@@ -231,7 +230,7 @@ def get_drag(v, h, stage):
         raise ValueError("h must be non-negative")
 
     m = get_mach(h, v)
-    area = stage_params[stage]['radius']
+    area = np.pi * stage_params[stage]['radius'] ** 2
 
     got_drag = 0.5 * get_cd(m) * get_rho(h) * v ** 2 * area
     return got_drag
@@ -324,40 +323,37 @@ velocity = sol.y[0]                         #Velocity data
 gamma = sol.y[1]                            #Gamma data
 x_disp = sol.y[2]                           #X_disp data
 altitude = sol.y[3]                         #Altitude data
-grav = sol.y[4]#
+grav = sol.y[4]
 drag = sol.y[5]
 
-#TODO alter input for below#
-#drag_output = [D(v, h, t, stages) for v, h, t in zip(velocity, altitude, time)]
-#rho_output = [rho(h) for h in altitude]
-#mach_output = [mach(h,v) for h, v in zip(altitude, velocity)]
-#mass_output = [mass(t,stages) for t in time]
-#thrust_output = [get_thrust(t, h, stages, ThrustASL_s1, ThrustVac_s1, ThrustASL_s2, ThrustVac_s2, t_bo_s1, t_bo_s2)
-#                 for t, h in zip(time, altitude)]
-#gravity_output = [get_grav(h) for h in altitude]
-#
-#fig, results = plt.subplots(2, 2, figsize=(10, 8))
-#
-## Plot each graph in its own subplot
-#results[0, 0].plot(time, thrust_output, label="Thrust")
-#results[0, 1].plot(time, drag_output, label="Drag")
-#results[1, 0].plot(time, mass_output, label="Mass")
-#results[1, 1].plot(time, gravity_output, label="Gravity")
 
-## Add titles
-#titles = ["Thrust (kN)", "Drag (kN)", "Mass (kg)", "Gravity Acc (km/s^2)"]
-#ylims = [[0,9], [0,3],[0,400], [0,0.01]]
-#for ax, title, ylim in zip(results.flat, titles, ylims):
-#    ax.set_title(title)
-#    ax.set_ylim(ylim)
-#    ax.set_xlim([1.5, 200])
-#
-#    ax.legend()
-#    ax.grid(True)
-#
-#plt.tight_layout()
-#
-#plt.show()
+stage_data = [get_stage(t) for t in time]
+thrust_plot_data = [get_thrust(t, h, stage) for t, h, stage in zip(time, altitude, stage_data)]
+dynamic_pressure_data = [(0.5 * get_rho(h) * v ** 2) for h,v in zip(altitude, velocity)]
+mass_data = [get_mass(t,stage) for t, stage in zip(time, stage_data)]
+
+fig, results = plt.subplots(2, 2, figsize=(10, 8))
+
+# Plot each graph in its own subplot
+results[0, 0].plot(time, thrust_plot_data, label="Thrust")
+results[0, 1].plot(time, mass_data, label="Mass")
+results[1, 0].plot(time, altitude, label="Altitude")
+results[1, 1].plot(time, velocity, label="Velocity")
+
+# Add titles
+titles = ["Thrust (kN)", "Mass (kg)", "Altitude (km)", "Velocity (km/s)"]
+ylims = [[0,15], [0,800],[0,150], [0,1.5]]
+for ax, title, ylim in zip(results.flat, titles, ylims):
+    ax.set_title(title)
+    ax.set_ylim(ylim)
+    ax.set_xlim([0, tf])
+
+    ax.legend()
+    ax.grid(True)
+
+plt.tight_layout()
+
+plt.show()
 
 #PRINT FINAL VALUES#
 

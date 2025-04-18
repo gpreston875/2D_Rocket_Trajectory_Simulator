@@ -1,6 +1,5 @@
 ######FLIGHT PATH ESTIMATOR######
 
-
 #Units: kg, km, s, kN#
 
 #ASSUMPTIONS#

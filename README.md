@@ -7,7 +7,6 @@ Physics based vertical launch vehicle trajectory simulator. Estimates flight pat
 - gravitational acceleration and density variability with altitude
 - multi-staging.
 
-- 
 Validated against Aerobee 150A flight data (Vought Astronautics, 1961) to within ~1.5% of altitude and ~5% of range (expected due to simplified 2D assumptions and no aerodynamic instability modeling). 
 
 Outputs:

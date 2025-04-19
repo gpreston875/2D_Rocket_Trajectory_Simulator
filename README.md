@@ -26,7 +26,9 @@ matplotlib
 
 Example Output:
 ![image](https://github.com/user-attachments/assets/40ab0f88-42c9-4cc0-8d26-fce29203ed00)
-"
+Note: Velocity remains positive as it is always tangential to the flight path (i.e., scalar magnitude of motion along trajectory).
+
+
 Final velocity: 1.77 km/s
 Final altitude: 9.40 km
 Final Downstream Range Reached: 97.00 km
@@ -35,6 +37,6 @@ Max Altitude Reached: 285.3 km
 Max Velocity Reached: 2.15 km/s
 Total gravity losses: 0.35 km/s (Δv)
 Total drag losses: 0.90 km/s (Δv)
-"
+
 
 1 - Vought Astronautics. (1961). 'Performance Summary for the Aerobee 150A Sounding Rocket'. [Dallas, Texas]: Available at: https://www.rasaero.com/dloads/Aerobee%20150A%20-%20Vought%20Astronautics%20Report%20AST%20E1R-13319.pdf. (Accessed: 19/04/2025).

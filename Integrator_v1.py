@@ -357,6 +357,7 @@ for ax, title, ylim in zip(results.flat, titles, ylims):
     ax.set_title(title)
     ax.set_ylim(ylim)
     ax.set_xlim([0, tf])
+    ax.set_xlabel("Time (s)")
 
     ax.legend()
     ax.grid(True)
@@ -369,10 +370,10 @@ plt.show()
 print(f"Final velocity: {v_final:.2f} km/s")
 print(f"Final altitude: {h_final:.2f} km")
 print(f"Final Downstream Range Reached: {x_final:.2f} km")
-print(f"Final flight path angle: {np.degrees(gamma_final)} deg")
+print(f"Final flight path angle: {round(np.degrees(gamma_final), 1)} deg")
 
-print(f"Max Altitude Reached: {max(altitude)} km")
-print(f"Max Velocity Reached: {max(velocity)} km/s")
+print(f"Max Altitude Reached: {round(max(altitude),2)} km")
+print(f"Max Velocity Reached: {round(max(velocity),2)} km/s")
 
 print(f"Total gravity losses: {g_losses_final:.2f} km/s (Δv)")
 print(f"Total drag losses: {d_losses_final:.2f} km/s (Δv)")

@@ -30,9 +30,9 @@ Example Output:
 Final velocity: 1.77 km/s
 Final altitude: 9.40 km
 Final Downstream Range Reached: 97.00 km
-Final flight path angle: -84.82496839311248 deg
-Max Altitude Reached: 285.2988286261082 km
-Max Velocity Reached: 2.1497255156002133 km/s
+Final flight path angle: -84.8 deg
+Max Altitude Reached: 285.3 km
+Max Velocity Reached: 2.15 km/s
 Total gravity losses: 0.35 km/s (Δv)
 Total drag losses: 0.90 km/s (Δv)
 "

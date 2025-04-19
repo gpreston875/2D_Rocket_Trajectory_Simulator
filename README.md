@@ -24,10 +24,8 @@ scipy
 numpy
 matplotlib
 
-Example Output:
+Example Output (Note: Velocity remains positive as it is always tangential to the flight path (i.e., scalar magnitude of motion along trajectory)):
 ![image](https://github.com/user-attachments/assets/40ab0f88-42c9-4cc0-8d26-fce29203ed00)
-Note: Velocity remains positive as it is always tangential to the flight path (i.e., scalar magnitude of motion along trajectory).
-
 
 Final velocity: 1.77 km/s
 Final altitude: 9.40 km

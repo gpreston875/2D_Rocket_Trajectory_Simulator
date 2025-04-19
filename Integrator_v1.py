@@ -34,7 +34,7 @@ gamma0 = np.radians(88)                     #Initial pitch angle at launch
 v0 = x0 = h0 = vd0 = vg0 = 0                #Initial state-vector values
 y0 = [v0, gamma0, x0, h0, vg0, vd0]         #Initial state-vector
 t0 = 0                                      #Initial time
-tf = 400                                    #Final time
+tf = 530                                    #Final time
 t_span = (t0,tf)                            #Time span for RK45 function
 
 #VEHICLE PARAMETERS#
@@ -268,7 +268,12 @@ def rates(t, y):
 
     """
     Defines equations for state-vector rates in addition to drag and gravity losses.
-    for use in integrator solver
+    for use in integrator solver.
+
+    Note:
+
+    v is the velocity tangential to the flight path
+    gamma is the flight path angle, defined as the angle between the horizontal and velocity unit vectors
 
     :param t: time in seconds (float or int)
     :param y: state-vector containing 6 elements - velocity, pitch angle, downstream displacement,
@@ -290,21 +295,21 @@ def rates(t, y):
     drag = get_drag(v,h,stage_flag)
     g = get_grav(h)
 
-    if h <= h_pitch:          #Pitching assumed to start at h_pitch. Until then, assume vertical flight
+    if h <= h_pitch:                          #Pitching assumed to start at h_pitch. Until then, assume vertical flight
 
-        dv_dt = T / m - drag / m - g  #Acceleration (from Newton's second law)
-        dgamma_dt = 0                            #Rate of pitching due to gravity
-        dx_dt = 0                                #Downstream velocity
-        dh_dt = v                                #Vertical velocity component
+        dv_dt = T / m - drag / m - g          #Acceleration (from Newton's second law)
+        dgamma_dt = 0                         #Rate of pitching due to gravity
+        dx_dt = 0                             #Downstream velocity
+        dh_dt = v                             #Vertical velocity component
         dg_losses_dt = g                      #Rate of losses due to gravity
 
     else:
 
-        dv_dt = T / m - drag / m - g * np.sin(gamma)             #Acceleration (from Newton's second law)
-        dgamma_dt = - (1 / v) * (g - (v ** 2 / (R_E + h))) * np.cos(gamma)   #Rate of pitching due to gravity
+        dv_dt = T / m - drag / m - g * np.sin(gamma)                            #Acceleration (from Newton's second law)
+        dgamma_dt = - (1 / v) * (g - (v ** 2 / (R_E + h))) * np.cos(gamma)      #Rate of pitching due to gravity
         dx_dt = R_E / (R_E + h) * v * np.cos(gamma)                             #Downstream velocity
         dh_dt = v * np.sin(gamma)                                               #Vertical velocity component
-        dg_losses_dt = g * np.sin(gamma)                                     #Rate of losses due to gravity
+        dg_losses_dt = g * np.sin(gamma)                                        #Rate of losses due to gravity
 
     dd_losses_dt = drag / m              #Rate of drag losses
 
@@ -326,8 +331,8 @@ velocity = sol.y[0]                         #Velocity data
 gamma = sol.y[1]                            #Gamma data
 range_km = sol.y[2]                         #X_disp data
 altitude = sol.y[3]                         #Altitude data
-drag = sol.y[4]
-grav = sol.y[5]
+drag = sol.y[4]                             #Drag data
+grav = sol.y[5]                             #Gravitational acceleration data
 
 #Data processing for plot
 
@@ -347,7 +352,7 @@ results[1, 1].plot(time, flight_path_angle_degs, label="Flight Path Angle")
 
 # Plot settings
 titles = ["Altitude (km)", "Range (km)", "Velocity (km/s)", "Flight Path Angle (deg)"]
-ylims = [[0,290], [0,80],[0,1.5], [-90,90]]
+ylims = [[0,290], [0,80],[0,2.15], [-90,90]]
 for ax, title, ylim in zip(results.flat, titles, ylims):
     ax.set_title(title)
     ax.set_ylim(ylim)
@@ -363,12 +368,14 @@ plt.show()
 
 print(f"Final velocity: {v_final:.2f} km/s")
 print(f"Final altitude: {h_final:.2f} km")
-print(f"Total gravity losses: {g_losses_final:.2f} km/s (Δv)")
-print(f"Total drag losses: {d_losses_final:.2f} km/s (Δv)")
+print(f"Final Downstream Range Reached: {x_final:.2f} km")
 print(f"Final flight path angle: {np.degrees(gamma_final)} deg")
+
 print(f"Max Altitude Reached: {max(altitude)} km")
 print(f"Max Velocity Reached: {max(velocity)} km/s")
 
+print(f"Total gravity losses: {g_losses_final:.2f} km/s (Δv)")
+print(f"Total drag losses: {d_losses_final:.2f} km/s (Δv)")
 
 
 

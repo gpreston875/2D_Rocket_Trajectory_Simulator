@@ -7,6 +7,10 @@
 #CONSTANT MASS FLOW RATE
 #2D FLIGHT PATH
 #INTERNATIONAL STANDARD ATMOSPHERIC MODEL
+#Example data from Aerobee 150A: Vought Astronautics. (1961).
+# 'Performance Summary for the Aerobee 150A Sounding Rocket'. [Dallas, Texas]
+# Available at: https://www.rasaero.com/dloads/Aerobee%20150A%20-%20Vought%20Astronautics%20Report%20AST%20E1R-13319.pdf
+# (Accessed: 19/04/2025).
 
 #Import Dependencies#
 import matplotlib.pyplot as plt
@@ -45,7 +49,7 @@ stage_params = [
     "radius": 0.00019, "t_burnout": 52, "thrustASL": 20.3, "thrustVac": 20.3},
 
     {"stage": 2, "m0":178.2,"mProp": 0.0,
-    "radius": 0.00019, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
+    "radius": 0.00019, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}       #Coasting Stage
 ]
 
 def get_grav(h):
@@ -325,7 +329,7 @@ altitude = sol.y[3]                         #Altitude data
 drag = sol.y[4]
 grav = sol.y[5]
 
-#Plotting Data
+#Data processing for plot
 
 stage_data = [get_stage(t) for t in time]
 thrust_plot_data = [get_thrust(t, h, stage) for t, h, stage in zip(time, altitude, stage_data)]

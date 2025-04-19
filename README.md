@@ -2,27 +2,27 @@ Flight Path Estimator - 2D Rocket Trajectory Simulator
 
 Physics based vertical launch vehicle trajectory simulator. Estimates flight path using RK45 integration of Newtonian equations of motion accounting for:
 
-- variable drag
-- thrust interpolation with altitude
-- gravitational acceleration and density variability with altitude
-- multi-staging.
+- Variable drag
+- Thrust interpolation with altitude
+- Gravitational acceleration and density variability with altitude
+- Multi-staging.
 
 Validated against Aerobee 150A flight data (Vought Astronautics, 1961) to within ~1.5% of altitude and ~5% of range (expected due to simplified 2D assumptions and no aerodynamic instability modeling). 
 
 Outputs:
 
-Final / max velocity
-Final / max altitude 
-Range
-Flight path angle
-Gravity losses
-Drag losses
+- Final / max velocity
+- Final / max altitude 
+- Range
+- Flight path angle
+- Gravity losses
+- Drag losses
 
 Dependencies:
 
-scipy
-numpy
-matplotlib
+- scipy
+- numpy
+- matplotlib
 
 Example Output (Note: Velocity remains positive as it is always tangential to the flight path (i.e., scalar magnitude of motion along trajectory)):
 ![image](https://github.com/user-attachments/assets/40ab0f88-42c9-4cc0-8d26-fce29203ed00)

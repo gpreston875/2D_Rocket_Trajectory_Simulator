@@ -26,11 +26,11 @@ R_E = 6378                  #Radius of Earth in (km)
 
 #MISSION PARAMETERS#
 h_pitch = 0.01                              #Altitude to start gravity turn
-gamma0 = np.radians(90)                     #Initial pitch angle at launch
+gamma0 = np.radians(88)                     #Initial pitch angle at launch
 v0 = x0 = h0 = vd0 = vg0 = 0                #Initial state-vector values
 y0 = [v0, gamma0, x0, h0, vg0, vd0]         #Initial state-vector
 t0 = 0                                      #Initial time
-tf = 150                                #Final time
+tf = 400                                    #Final time
 t_span = (t0,tf)                            #Time span for RK45 function
 
 #VEHICLE PARAMETERS#
@@ -38,14 +38,14 @@ stage_params = [
 
 #dictionary of staging parameters:
 
-    {"stage": 0, "m0":751,"mProp": 68,
-    "radius": 0.00015, "t_burnout": 0.63, "thrustASL": 222.4, "thrustVac": 244.4},
+    {"stage": 0, "m0":928.7,"mProp": 120,
+    "radius": 0.00019, "t_burnout": 2.5, "thrustASL": 78.6, "thrustVac": 78.5},
 
-    {"stage": 1, "m0":470,"mProp": 280,
-    "radius": 0.00015, "t_burnout": 40, "thrustASL": 11.7, "thrustVac": 13.8},
+    {"stage": 1, "m0":658,"mProp": 479.3,
+    "radius": 0.00019, "t_burnout": 52, "thrustASL": 20.3, "thrustVac": 20.3},
 
-    {"stage": 2, "m0":190,"mProp": 0.0,
-    "radius": 0.00015, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
+    {"stage": 2, "m0":178.2,"mProp": 0.0,
+    "radius": 0.00019, "t_burnout": 1000, "thrustASL": 0.0, "thrustVac": 0.0}
 ]
 
 def get_grav(h):
@@ -151,8 +151,8 @@ def get_cd(mach):
     :return: c_d (dimensionless)
     """
 
-    mach_numbers = [0, 1, 1.25, 2.0, 3.5, 8]
-    cd_values = [0.05, 0.010, 0.024, 0.034, 0.036, 0.036]
+    mach_numbers = [0.00, 0.75, 1.0, 1.10, 1.25, 2.00, 2.25, 3.00, 4.00, 8.0]
+    cd_values =    [0.55, 0.55, 0.7, 0.95, 0.95, 0.65, 0.50, 0.45, 0.41, 0.4]
 
     # Create interpolation function
     cd_interp = interp1d(mach_numbers, cd_values, kind='linear', fill_value='extrapolate')
@@ -304,7 +304,7 @@ def rates(t, y):
 
     dd_losses_dt = drag / m              #Rate of drag losses
 
-    return dv_dt, dgamma_dt, dx_dt, dh_dt, dd_losses_dt, dg_losses_dt,
+    return dv_dt, dgamma_dt, dx_dt, dh_dt, dd_losses_dt, dg_losses_dt
 
 #####RK4(5) and solution######
 
@@ -314,34 +314,36 @@ v_final = sol.y[0, -1]                      #Final velocity
 gamma_final = sol.y[1, -1]                  #Final pitch angle
 x_final = sol.y[2, -1]                      #Final downstream displacement
 h_final = sol.y[3, -1]                      #Final altitude
-g_losses_final = sol.y[4, -1]               #Total gravity losses
-d_losses_final = sol.y[5, -1]               #Total drag losses
+d_losses_final = sol.y[4, -1]               #Total drag losses
+g_losses_final = sol.y[5, -1]               #Total gravity losses
 
 time = sol.t                                #Time data
 velocity = sol.y[0]                         #Velocity data
 gamma = sol.y[1]                            #Gamma data
-x_disp = sol.y[2]                           #X_disp data
+range_km = sol.y[2]                         #X_disp data
 altitude = sol.y[3]                         #Altitude data
-grav = sol.y[4]
-drag = sol.y[5]
+drag = sol.y[4]
+grav = sol.y[5]
 
+#Plotting Data
 
 stage_data = [get_stage(t) for t in time]
 thrust_plot_data = [get_thrust(t, h, stage) for t, h, stage in zip(time, altitude, stage_data)]
 dynamic_pressure_data = [(0.5 * get_rho(h) * v ** 2) for h,v in zip(altitude, velocity)]
 mass_data = [get_mass(t,stage) for t, stage in zip(time, stage_data)]
+flight_path_angle_degs = np.rad2deg(gamma)
 
 fig, results = plt.subplots(2, 2, figsize=(10, 8))
 
-# Plot each graph in its own subplot
-results[0, 0].plot(time, thrust_plot_data, label="Thrust")
-results[0, 1].plot(time, mass_data, label="Mass")
-results[1, 0].plot(time, altitude, label="Altitude")
-results[1, 1].plot(time, velocity, label="Velocity")
+# Plots
+results[0, 0].plot(time, altitude, label="Altitude")
+results[0, 1].plot(time, range_km, label="Range")
+results[1, 0].plot(time, velocity, label="Velocity")
+results[1, 1].plot(time, flight_path_angle_degs, label="Flight Path Angle")
 
-# Add titles
-titles = ["Thrust (kN)", "Mass (kg)", "Altitude (km)", "Velocity (km/s)"]
-ylims = [[0,15], [0,800],[0,150], [0,1.5]]
+# Plot settings
+titles = ["Altitude (km)", "Range (km)", "Velocity (km/s)", "Flight Path Angle (deg)"]
+ylims = [[0,290], [0,80],[0,1.5], [-90,90]]
 for ax, title, ylim in zip(results.flat, titles, ylims):
     ax.set_title(title)
     ax.set_ylim(ylim)
@@ -351,7 +353,6 @@ for ax, title, ylim in zip(results.flat, titles, ylims):
     ax.grid(True)
 
 plt.tight_layout()
-
 plt.show()
 
 #PRINT FINAL VALUES#
